@@ -1,28 +1,77 @@
 import json
 from difflib import get_close_matches
+import tkinter as tk
 
 data = json.load(open("./data.json"))
 
-def translate(word):
+def translate():
+    word = word_value1.get()
+
+    translation.delete('1.0', tk.END)
+
     wordLower = word.lower()
 
     if wordLower in data:
-        return data[wordLower]
+        if type(data[wordLower]) == list:
+            for item in data[wordLower]:
+                word1.delete('0', tk.END)
+                translation.insert(tk.END, item)
+                translation.insert(tk.END, '\n')
+        else:
+            return data[wordLower]
+
     elif get_close_matches(wordLower, data.keys(), cutoff=0.8):
+
         word = get_close_matches(wordLower, data.keys(), cutoff=0.8)[0]
-        yn = input(f"Did you mean {word}? Enter Y if yes, or N if no: ")
-        if yn.lower() == "y":
-            return data[word]
-        return "Sorry, try again."
+
+        item = (f"Did you mean {word}? Enter above Y if yes, or N if no: ")
+
+        translation.insert(tk.END, item)
+
+        word_value2 = tk.StringVar()
+        word2 = tk.Entry(window, textvariable=word_value2)
+        word2.config(width=10)
+        word2.grid(row=3, column=2)
+
+        def tryagain():
+            yn = word_value2.get()
+
+            if yn.lower() == "y":
+                translation.delete('1.0', tk.END)
+                if type(data[word]) == list:
+                    for item2 in data[word]:
+                        word1.delete('0', tk.END)
+                        translation.insert(tk.END, item2)
+                        translation.insert(tk.END, '\n')
+                else:
+                    return data[word]
+
+            elif yn.lower() == "n":
+                translation.delete('1.0', tk.END)
+                translation.insert(tk.END, "Sorry, try again.")
+
+        btn2 = tk.Button(window, text="Try Again", command=tryagain)
+        btn2.grid(row=3, column=4)
+
     else:
-        return "Word does not exists. Please double check it"
+        translation.insert(tk.END, "Word does not exists. Please double check it")
 
-word = input("Enter word: ")
 
-output = (translate(word))
+window = tk.Tk()
 
-if type(output) == list:
-    for item in output:
-        print(item)
-else:
-    print(output)
+
+word_value1 = tk.StringVar()
+word1 = tk.Entry(window, textvariable = word_value1)
+word1.config(width=40)
+word1.grid(row=2, column=2)
+
+btn = tk.Button(window, text="Translate", command=translate)
+btn.grid(row=2, column=4)
+
+translation = tk.Text(window, height = 30, width=120)
+translation.grid(row=6, column=2)
+
+
+
+
+window.mainloop()
