@@ -31,7 +31,7 @@ def translate():
         word_value2 = tk.StringVar()
         word2 = tk.Entry(window, textvariable=word_value2)
         word2.config(width=10)
-        word2.grid(row=3, column=2)
+        word2.grid(row=1, column=4)
 
         def tryagain():
             yn = word_value2.get()
@@ -40,18 +40,25 @@ def translate():
                 translation.delete('1.0', tk.END)
                 if type(data[word]) == list:
                     for item2 in data[word]:
-                        word1.delete('0', tk.END)
+              #          word1.delete('0', tk.END)
                         translation.insert(tk.END, item2)
                         translation.insert(tk.END, '\n')
+                        word2.destroy()
+                        btn2.destroy()
                 else:
+                    word2.destroy()
+                    btn2.destroy()
                     return data[word]
 
             elif yn.lower() == "n":
+                word1.delete('0', tk.END)
                 translation.delete('1.0', tk.END)
                 translation.insert(tk.END, "Sorry, try again.")
+                word2.destroy()
+                btn2.destroy()
 
         btn2 = tk.Button(window, text="Try Again", command=tryagain)
-        btn2.grid(row=3, column=4)
+        btn2.grid(row=1, column=7)
 
     else:
         translation.insert(tk.END, "Word does not exists. Please double check it")
@@ -59,19 +66,20 @@ def translate():
 
 window = tk.Tk()
 
+window.title("Translator")
 
 word_value1 = tk.StringVar()
 word1 = tk.Entry(window, textvariable = word_value1)
+word1.grid(row=1, column=4)
 word1.config(width=40)
-word1.grid(row=2, column=2)
+label1 = tk.Label(window, text="Enter a word you want to translate")
+label1.grid(row=1, column=3)
 
 btn = tk.Button(window, text="Translate", command=translate)
-btn.grid(row=2, column=4)
+btn.grid(row=1, column=7)
 
-translation = tk.Text(window, height = 30, width=120)
-translation.grid(row=6, column=2)
-
-
+translation = tk.Text(window)
+translation.grid(row=4, columnspan=8)
 
 
 window.mainloop()
